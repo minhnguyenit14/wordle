@@ -1,6 +1,8 @@
 <template>
   <Modal :visible="visible" :modalClass="modalClass">
     <div class="container">
+      <button class="btn btn-close" @click="onClose">x</button>
+
       <h1>{{ isWin ? "Congratulation!" : "Oops! :(" }}</h1>
       <p :class="['message', messageClassName]">{{ message }}</p>
 
@@ -42,7 +44,7 @@ export default {
       );
     },
     messageClassName() {
-      return this.isWin ? this.winLevel.toLowerCase(): "";
+      return this.isWin ? this.winLevel.toLowerCase() : "";
     },
     message() {
       if (!this.visible) return "";
@@ -64,11 +66,12 @@ export default {
   props: {
     moves: Number,
     ratio: Number,
-    onClickNewGame: Function,
     isWin: Boolean,
     visible: Boolean,
     modalClass: String,
     result: Array,
+    onClickNewGame: Function,
+    onClose: Function,
   },
 };
 </script>
@@ -81,7 +84,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 100px;
+  padding: 40px 50px;
 }
 .row {
   display: flex;
@@ -102,8 +105,9 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0px;
+  margin-top: -10px;
   margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
 .charBox {
@@ -113,14 +117,15 @@ h1 {
   width: 50px;
   height: 50px;
   background: #208c61;
-  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: 10px;
 
   color: #fff;
   font-weight: bold;
   font-size: 24px;
 }
 
-.charBox + .last {
+.charBox + .first {
   margin-right: 0px;
 }
 
@@ -144,5 +149,19 @@ p.message.good {
 p.message.nice {
   font-size: 18px;
   color: #c96a3e;
+}
+
+.btn-close {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  border-color: transparent;
 }
 </style>

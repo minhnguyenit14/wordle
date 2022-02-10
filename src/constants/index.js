@@ -1,3 +1,29 @@
+export const SUCCESS_LEVEL = {
+  EXCELLENT: 0.25,
+  GOOD: 0.75,
+  NICE: 1,
+};
+
+export const SUCCESS_MESSAGE = {
+  EXCELLENT: ['Incredible!', 'How extraordinary you are!', 'Unbelievable!'],
+  GOOD: ['Very good!', "That's right!", 'You are so talent!'],
+  NICE: ['Nice!', 'Awesome!', 'Correct!'],
+};
+export const FAIL_MESSAGE = [
+  'Bad luck!',
+  "It's hard, right?",
+  'Not your time!',
+];
+
+export const CORRECT_LEVEL = {
+  INCORRECT: 0,
+  ALMOST_CORRECT: 1,
+  CORRECT: 2,
+};
+
+export const VIETNAMESE_REGEX =
+  /[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/s;
+
 export const WORDS_POOL = [
   {
     countryCode: 'us',
@@ -182,30 +208,384 @@ export const WORDS_POOL = [
     extraGuessTime: 3,
     value: 'phải',
   },
+
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'author',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'artist',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'curve',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'couch',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'enjoyment',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'average',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'complete',
+  },
+
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'erase',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'famous',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'extreme',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'schedule',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'today',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'weekend',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'favorite',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'moral',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'mystery',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'absent',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'adult',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'sex',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'love',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'arrange',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'chance',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'cubic',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'square',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'oval',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'limit',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'lipid',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'liquid',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'snake',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'tiger',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'monkey',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'buffalo',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'forest',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'mountain',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'double',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'corner',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'quarter',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'divide',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'ghost',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'mineral',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'vitamin',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'human',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'person',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'duck',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'think',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'cancel',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: 2,
+    value: 'currency',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'brand',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: 2,
+    value: 'giraffe',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'health',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'commit',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'allow',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: null,
+    value: 'adopt',
+  },
+  {
+    countryCode: 'us',
+    isUnicode: true,
+    guessTime: null,
+    extraGuessTime: 3,
+    value: 'sophisticate',
+  },
 ];
-
-export const SUCCESS_LEVEL = {
-  EXCELLENT: 0.25,
-  GOOD: 0.75,
-  NICE: 1,
-};
-
-export const SUCCESS_MESSAGE = {
-  EXCELLENT: ['Incredible!', 'How extraordinary you are!', 'Unbelievable!'],
-  GOOD: ['Very good!', "That's right!", 'You are so talent!'],
-  NICE: ['Nice!', 'Awesome!', 'Correct!'],
-};
-export const FAIL_MESSAGE = [
-  'Bad luck!',
-  "It's hard, right?",
-  'Not your time!',
-];
-
-export const CORRECT_LEVEL = {
-  INCORRECT: 0,
-  ALMOST_CORRECT: 1,
-  CORRECT: 2,
-};
-
-export const VIETNAMESE_REGEX =
-  /[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/s;

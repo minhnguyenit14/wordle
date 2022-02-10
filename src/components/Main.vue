@@ -13,11 +13,14 @@
 
       <div class="body">
         <div class="actionBar">
-          <div class="info">Country <img :src="getImgUrl" /></div>
-
-          <button class="btn" @click="onSubmit" :disabled="!canSubmit">
-            Guess
+          <button
+            class="btn"
+            @click="onSubmit"
+            :disabled="!canSubmit && !isEndGame"
+          >
+            {{ isEndGame ? "New game" : "Guess" }}
           </button>
+          <div class="info"><img :src="getImgUrl" /></div>
         </div>
         <div class="container">
           <GuessRow
@@ -37,13 +40,14 @@
       <div class="footer"></div>
 
       <ModalFinish
-        :visible="isEndGame"
+        :visible="isShowModalResult"
         :moves="selectedRowIndex"
         :isWin="isWin"
-        :onClickNewGame="handleNewGame"
         :modalClass="'modalFinish'"
         :result="keyword"
         :ratio="selectedRowIndex / totalGuessTime"
+        :onClickNewGame="handleNewGame"
+        :onClose="handleCloseModal"
       />
     </div>
   </div>
@@ -76,6 +80,8 @@ export default {
       keyword: "",
       selectedRowIndex: 0,
       listGuessRow: [],
+      animateResult: false,
+      isShowModalResult: false,
     };
   },
   components: {
@@ -90,7 +96,8 @@ export default {
     canSubmit() {
       return (
         this.selectedRowIndex <= this.listGuessRow.length &&
-        this.currentListGuessRow?.length === this.keyword.length
+        this.currentListGuessRow?.length === this.keyword.length &&
+        !this.animateResult
       );
     },
     isWin() {
@@ -114,6 +121,11 @@ export default {
     },
   },
   watch: {
+    isEndGame(newV) {
+      if (newV) {
+        this.isShowModalResult = newV;
+      }
+    },
     keyPressed(newV) {
       if (!newV) {
         this.currentListGuessRow = [];
@@ -126,7 +138,7 @@ export default {
           index === this.selectedRowIndex
         ) {
           this.listGuessRow[index] = newV.split("").map((char) => ({
-            correctLevel: -1,
+            correctLevel: undefined,
             value: char.toUpperCase(),
           }));
 
@@ -139,6 +151,7 @@ export default {
     initData() {
       this.keyPressed = "";
       this.selectedRowIndex = 0;
+      this.isShowModalResult = false;
       this.keywordData =
         WORDS_POOL[randomIntFromInterval(0, WORDS_POOL.length - 1)];
       this.keyword = this.keywordData.value.toUpperCase().split("");
@@ -149,7 +162,8 @@ export default {
       }).map(() => []);
     },
     handleNewGame() {
-      this.initData();
+      this.isShowModalResult = false;
+      setTimeout(this.initData, 300);
     },
     handleKeyDown(e) {
       if ((e.which >= 37 && e.which <= 40) || e.which === 32) {
@@ -169,25 +183,64 @@ export default {
       }
     },
     setSelectedRowIndex(index) {
-      this.selectedRowIndex = index;
+      // this.selectedRowIndex = index;
     },
     onSubmit() {
       if (!this.canSubmit) return;
 
-      this.currentListGuessRow.forEach((guessedChar, index) => {
+      if (this.isEndGame) {
+        this.handleNewGame();
+        return;
+      }
+
+      const currentListGuessRow = this.currentListGuessRow.map(
+        (guessedChar) => ({ ...guessedChar })
+      );
+
+      currentListGuessRow.forEach((guessedChar, index) => {
         if (guessedChar?.value) {
           if (guessedChar.value === this.keyword[index]) {
-            guessedChar.correctLevel = 2;
-          } else if (this.keyword.includes(guessedChar.value)) {
-            guessedChar.correctLevel = 1;
-          } else {
-            guessedChar.correctLevel = 0;
+            guessedChar.correctLevel = CORRECT_LEVEL.CORRECT;
           }
         }
       });
 
-      this.selectedRowIndex++;
-      this.updateInputValue("");
+      currentListGuessRow.forEach((guessedChar, index) => {
+        if (guessedChar?.value) {
+          if (
+            this.keyword.includes(guessedChar.value) &&
+            guessedChar.correctLevel !== CORRECT_LEVEL.CORRECT &&
+            currentListGuessRow.slice(0, index + 1).filter((char) => {
+              return (
+                char.value === guessedChar.value &&
+                this.keyword.includes(guessedChar.value)
+              );
+            }).length <=
+              this.keyword.filter((char) => char === guessedChar.value).length
+          ) {
+            guessedChar.correctLevel = CORRECT_LEVEL.ALMOST_CORRECT;
+          } else if (guessedChar.correctLevel === undefined) {
+            guessedChar.correctLevel = CORRECT_LEVEL.INCORRECT;
+          }
+        }
+      });
+
+      const updateVerifiedData = async () => {
+        this.animateResult = true;
+        for (const [index, guessedChar] of currentListGuessRow.entries()) {
+          guessedChar.animate = true;
+          this.currentListGuessRow[index] = guessedChar;
+          await new Promise((resolve) => setTimeout(resolve, 150));
+        }
+
+        setTimeout(() => {
+          this.animateResult = false;
+          this.selectedRowIndex++;
+          this.updateInputValue("");
+        }, 500);
+      };
+
+      updateVerifiedData();
     },
     changeInput(e) {
       let value = e.target.value.trim();
@@ -202,6 +255,9 @@ export default {
       if (this.$refs.input) {
         this.$refs.input.value = value;
       }
+    },
+    handleCloseModal() {
+      this.isShowModalResult = false;
     },
   },
 };
@@ -233,7 +289,8 @@ body {
 <style scoped>
 .wrapper {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 30px;
   align-items: center;
   justify-content: center;
 }
