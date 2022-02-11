@@ -30,6 +30,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 cd dist && 
 git init && 
 git add -A && 
-git commit -m "fix logic, add animation" && 
-git push -f https://github.com/minhnguyenit14/wordle.git master:gh-pages
+git commit -m "deploy" && 
+git push -f https://github.com/minhnguyenit14/wordle.git master:gh-pages && 
+cd ..
 ```

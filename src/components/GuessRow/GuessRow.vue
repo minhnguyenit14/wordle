@@ -99,10 +99,10 @@ export default {
   perspective: 1000px;
 
   &.active {
-    animation: activeChar 0.3s ease;
+    animation: activeChar 0.1s ease;
     &.input-back,
     .input-front {
-      border-color: #888;
+      border-color: #878a8c;
     }
   }
 }
@@ -125,7 +125,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid #ddd;
+  border: 2px solid #d3d6da;
 }
 
 .input-front {

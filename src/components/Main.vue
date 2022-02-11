@@ -8,7 +8,7 @@
   <div class="wrapper">
     <div class="contentContainer">
       <div class="header">
-        <h1>Wordle</h1>
+        <h1 class="heading">Mimo Wordle</h1>
       </div>
 
       <div class="body">
@@ -154,6 +154,7 @@ export default {
       this.isShowModalResult = false;
       this.keywordData =
         WORDS_POOL[randomIntFromInterval(0, WORDS_POOL.length - 1)];
+      this.keywordData.value = "irrelevant";
       this.keyword = this.keywordData.value.toUpperCase().split("");
       this.totalGuessTime =
         this.keyword.length + 1 + (this.keywordData.extraGuessTime || 0);
@@ -166,6 +167,11 @@ export default {
       setTimeout(this.initData, 300);
     },
     handleKeyDown(e) {
+      if (this.animateResult) {
+        this.$refs.input.blur();
+        return;
+      }
+
       if ((e.which >= 37 && e.which <= 40) || e.which === 32) {
         e.preventDefault(); // Prevent the default action
         return;
@@ -173,6 +179,11 @@ export default {
       this.$refs.input.focus();
     },
     handleKeyUp(e) {
+      if (this.animateResult) {
+        this.$refs.input.blur();
+        return;
+      }
+
       if (e.which === 13) {
         e.preventDefault();
         if (this.isEndGame) {
@@ -185,7 +196,7 @@ export default {
     setSelectedRowIndex(index) {
       // this.selectedRowIndex = index;
     },
-    onSubmit() {
+    async onSubmit() {
       if (!this.canSubmit) return;
 
       if (this.isEndGame) {
@@ -213,9 +224,17 @@ export default {
             currentListGuessRow.slice(0, index + 1).filter((char) => {
               return (
                 char.value === guessedChar.value &&
-                this.keyword.includes(guessedChar.value)
+                this.keyword.includes(guessedChar.value) &&
+                char.correctLevel !== CORRECT_LEVEL.CORRECT
               );
-            }).length <=
+            }).length +
+              currentListGuessRow.filter((char) => {
+                return (
+                  char.value === guessedChar.value &&
+                  this.keyword.includes(guessedChar.value) &&
+                  char.correctLevel === CORRECT_LEVEL.CORRECT
+                );
+              }).length <=
               this.keyword.filter((char) => char === guessedChar.value).length
           ) {
             guessedChar.correctLevel = CORRECT_LEVEL.ALMOST_CORRECT;
@@ -225,22 +244,16 @@ export default {
         }
       });
 
-      const updateVerifiedData = async () => {
-        this.animateResult = true;
-        for (const [index, guessedChar] of currentListGuessRow.entries()) {
-          guessedChar.animate = true;
-          this.currentListGuessRow[index] = guessedChar;
-          await new Promise((resolve) => setTimeout(resolve, 150));
-        }
+      this.animateResult = true;
+      for (const [index, guessedChar] of currentListGuessRow.entries()) {
+        guessedChar.animate = true;
+        this.currentListGuessRow[index] = guessedChar;
+        await new Promise((resolve) => setTimeout(resolve, 150));
+      }
 
-        setTimeout(() => {
-          this.animateResult = false;
-          this.selectedRowIndex++;
-          this.updateInputValue("");
-        }, 500);
-      };
-
-      updateVerifiedData();
+      this.animateResult = false;
+      this.selectedRowIndex++;
+      this.updateInputValue("");
     },
     changeInput(e) {
       let value = e.target.value.trim();
@@ -266,11 +279,18 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 body {
-  background-image: url("../assets/bg.jpg");
+  /* background-image: url("../assets/bg.jpg");
   background-size: 150% 150%;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-position: center;
+  background-position: center; */
+  background-color: #fa8bff;
+  background-image: linear-gradient(
+    45deg,
+    #fa8bff 0%,
+    #2bd2ff 52%,
+    #2bff88 90%
+  );
 }
 
 .modalFinish {
@@ -302,9 +322,13 @@ body {
   justify-content: center;
   border-radius: 8px;
   padding: 30px;
-  background-color: rgba(255, 255, 255, 0.92);
-  box-shadow: 0px 0px 20px 0.5px #000;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0px 0px 20px 0.5px rgba(0, 0, 0, 0.2);
   min-width: 300px;
+}
+
+.heading {
+  font-family: "AlloyInk";
 }
 
 .container {
