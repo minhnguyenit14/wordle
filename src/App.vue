@@ -26,8 +26,7 @@ export default {
 }
 @font-face {
   font-family: "Kamryn";
-  src: local("Kamryn"),
-    url(./assets/fonts/Kamryn/Kamryn.ttf) format("truetype");
+  src: local("Kamryn"), url(./assets/fonts/Kamryn/Kamryn.ttf) format("truetype");
 }
 @font-face {
   font-family: "ClearSans-Regular";
@@ -38,6 +37,6 @@ export default {
   font-family: "ClearSans-Regular", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: var(--main-text);
 }
 </style>

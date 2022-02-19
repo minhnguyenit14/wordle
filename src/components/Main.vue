@@ -9,35 +9,46 @@
     <div class="contentContainer">
       <div class="header">
         <h1 class="heading">Mimo Wordle</h1>
+        <div class="info"><img class="flag" :src="getImgUrl" /></div>
       </div>
 
-      <div class="body">
-        <div class="actionBar">
-          <button
-            class="btn"
-            @click="onSubmit"
-            :disabled="!canSubmit && !isEndGame"
-          >
-            {{ isEndGame ? "New game" : "Guess" }}
-          </button>
-          <div class="info"><img :src="getImgUrl" /></div>
-        </div>
-        <div class="container">
-          <GuessRow
-            :class="{ last: index === listGuessRow.length - 1 }"
-            v-for="(listGuessedChar, index) in listGuessRow"
-            :key="index"
-            :onSelectRow="(e) => setSelectedRowIndex(index, e)"
-            :isSelected="index === selectedRowIndex"
-            :listGuessedChar="listGuessedChar"
-            :totalChars="keyword.length"
-            :rowIndex="index"
-            :currentIndex="selectedRowIndex"
-          />
+      <div
+        class="boardContainer"
+        :style="{
+          alignItems: containerStyle ? 'center' : 'unset',
+        }"
+      >
+        <div
+          class="body"
+          :style="{
+            width: containerStyle ? containerStyle + 'px' : undefined,
+            flex: containerStyle ? 'unset' : 1,
+          }"
+        >
+          <div class="container">
+            <GuessRow
+              :class="{ last: index === listGuessRow.length - 1 }"
+              v-for="(listGuessedChar, index) in listGuessRow"
+              :key="index"
+              :onSelectRow="(e) => setSelectedRowIndex(index, e)"
+              :isSelected="index === selectedRowIndex"
+              :listGuessedChar="listGuessedChar"
+              :totalChars="keyword.length"
+              :rowIndex="index"
+              :currentIndex="selectedRowIndex"
+            />
+            <div v-if="isEndGame" class="reset">
+              <button class="btn" @click="handleNewGame">
+                {{ isEndGame ? "New game" : "Guess" }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="footer"></div>
+      <div id="footer" class="footer">
+        <Keyboard :onClickChar="handleClickChar" />
+      </div>
 
       <ModalFinish
         :visible="isShowModalResult"
@@ -54,10 +65,13 @@
 </template>
 
 <script>
+import { randomIntFromInterval, isMobileOrTablet } from "../helpers";
+import { WORDS_POOL } from "../constants/wordsPool";
+import { VIETNAMESE_REGEX, CORRECT_LEVEL } from "../constants";
+import { GLOBAL_MUTATIONS_NAME } from "../store/modules/global/types";
 import ModalFinish from "./ModalFinish";
 import GuessRow from "./GuessRow";
-import { randomIntFromInterval } from "../helpers";
-import { WORDS_POOL, VIETNAMESE_REGEX, CORRECT_LEVEL } from "../constants";
+import Keyboard from "./Keyboard";
 
 export default {
   name: "Main",
@@ -66,11 +80,11 @@ export default {
   },
   mounted() {
     document.addEventListener("keydown", this.handleKeyDown);
-    document.addEventListener("keydown", this.handleKeyUp);
+    document.addEventListener("keypress", this.handleKeyPress);
   },
   beforeUnmount() {
     document.removeEventListener("keydown", this.handleKeyDown);
-    document.removeEventListener("keydown", this.handleKeyUp);
+    document.removeEventListener("keypress", this.handleKeyPress);
   },
   data() {
     return {
@@ -82,13 +96,25 @@ export default {
       listGuessRow: [],
       animateResult: false,
       isShowModalResult: false,
+      isMobileOrTablet: isMobileOrTablet(),
     };
   },
   components: {
     ModalFinish,
     GuessRow,
+    Keyboard,
   },
   computed: {
+    containerStyle() {
+      const baseCharWidth = 60;
+      const containerWidth =
+        baseCharWidth * this.keyword.length + 6 * (this.keyword.length - 1);
+      if (containerWidth + 20 < window.innerWidth) {
+        return containerWidth;
+      }
+
+      return "";
+    },
     getImgUrl() {
       const images = require.context("../assets/countryFlag", false, /\.svg$/);
       return images("./" + this.keywordData.countryCode + ".svg");
@@ -119,6 +145,10 @@ export default {
         this.listGuessRow[this.selectedRowIndex] = data;
       },
     },
+    paddingBottom() {
+      return document.getElementById("footer")?.offsetHeight + "px";
+    },
+    // keyboardHeight,
   },
   watch: {
     isEndGame(newV) {
@@ -154,8 +184,11 @@ export default {
       this.isShowModalResult = false;
       this.keywordData =
         WORDS_POOL[randomIntFromInterval(0, WORDS_POOL.length - 1)];
-      this.keywordData.value = "irrelevant";
       this.keyword = this.keywordData.value.toUpperCase().split("");
+      this.$store.commit(
+        GLOBAL_MUTATIONS_NAME.SET_KEYWORD_DATA,
+        this.keywordData
+      );
       this.totalGuessTime =
         this.keyword.length + 1 + (this.keywordData.extraGuessTime || 0);
       this.listGuessRow = Array.from({
@@ -166,6 +199,9 @@ export default {
       this.isShowModalResult = false;
       setTimeout(this.initData, 300);
     },
+    handleClickChar(char) {
+      this.handleKeyDown(char);
+    },
     handleKeyDown(e) {
       if (this.animateResult) {
         this.$refs.input.blur();
@@ -173,26 +209,42 @@ export default {
       }
 
       if ((e.which >= 37 && e.which <= 40) || e.which === 32) {
-        e.preventDefault(); // Prevent the default action
+        e.preventDefault && e.preventDefault(); // Prevent the default action
         return;
-      }
-      this.$refs.input.focus();
-    },
-    handleKeyUp(e) {
-      if (this.animateResult) {
-        this.$refs.input.blur();
-        return;
-      }
-
-      if (e.which === 13) {
-        e.preventDefault();
+      } else if (e.which === 13) {
         if (this.isEndGame) {
           this.handleNewGame();
         } else {
           this.onSubmit();
         }
+
+        if (e.preventDefault) {
+          e.preventDefault();
+        } else {
+          this.$refs.input.dispatchEvent(new Event("input"));
+        }
+
+        return;
+      }
+
+      if (!this.isMobileOrTablet) {
+        this.$refs.input.focus();
+      }
+
+      if (e.value) {
+        if (e.which === 8) {
+          this.$refs.input.value = this.$refs.input.value.substr(
+            0,
+            this.$refs.input.value.length - 1
+          );
+        } else if (this.$refs.input.value.length < this.keyword.length) {
+          this.$refs.input.value += e.value;
+        }
+
+        this.$refs.input.dispatchEvent(new Event("input"));
       }
     },
+    handleKeyPress(e) {},
     setSelectedRowIndex(index) {
       // this.selectedRowIndex = index;
     },
@@ -277,20 +329,40 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style lang="scss">
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+}
+
+html,
 body {
-  /* background-image: url("../assets/bg.jpg");
-  background-size: 150% 150%;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center; */
-  background-color: #fa8bff;
-  background-image: linear-gradient(
-    45deg,
-    #fa8bff 0%,
-    #2bd2ff 52%,
-    #2bff88 90%
-  );
+  position: fixed;
+  overflow: hidden;
+}
+
+body {
+  user-select: none;
+  background: var(--background);
+
+  @media (prefers-color-scheme: dark) {
+    --main-text: rgba(232, 234, 237, 1);
+    --background: rgb(53, 54, 58);
+  }
+
+  @media (prefers-color-scheme: light) {
+    --main-text: #2c3e50;
+    --background: #fff;
+  }
 }
 
 .modalFinish {
@@ -306,54 +378,92 @@ body {
   font-weight: bold;
 }
 </style>
-<style scoped>
+<style lang="scss" scoped>
 .wrapper {
   display: flex;
-  min-height: 100vh;
-  padding: 30px;
-  align-items: center;
+  flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  flex: 1;
   justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .contentContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  flex: 1;
   justify-content: center;
   border-radius: 8px;
-  padding: 30px;
-  background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0px 0px 20px 0.5px rgba(0, 0, 0, 0.2);
-  min-width: 300px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.boardContainer {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  padding: 0 5px;
+  max-height: calc(100vh - 270px);
+  max-height: -moz-calc(100vh - 270px);
+  max-height: -webkit-calc(100vh - 270px);
+  overflow-y: scroll;
+}
+
+.header {
+  display: flex;
+  display: -webkit-flex;
+  padding: 10px 10px;
+  padding-top: 20px;
+  user-select: none;
 }
 
 .heading {
   font-family: "AlloyInk";
+  margin: 0;
+  line-height: 30px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  flex: 1;
 }
 
 .container {
   position: relative;
-  display: inline-block;
-  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  flex: 1;
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
 .footer {
   width: 100%;
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .invisible {
-  position: absolute;
+  position: fixed;
   opacity: 0;
+  pointer-events: none;
 }
 
 .actionBar {
   display: flex;
+  display: -webkit-flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
@@ -361,11 +471,28 @@ body {
 
 .info {
   display: flex;
-  align-items: center;
+  display: -webkit-flex;
+  align-items: flex-start;
 }
 
-.info > img {
-  width: 20px;
-  margin-left: 10px;
+.flag {
+  width: 25px;
+  margin-left: 15px;
+}
+
+.reset {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  justify-content: center;
+
+  > .btn {
+    padding: 10px 20px;
+  }
 }
 </style>

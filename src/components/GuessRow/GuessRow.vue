@@ -82,21 +82,26 @@ export default {
 }
 .row {
   display: flex;
+  display: -webkit-flex;
+  flex: 1;
   justify-content: space-between;
   padding: 5px;
   padding-left: 5px;
   padding-right: 5px;
+  min-height: 50px;
+  user-select: none;
 }
 
 .input {
-  width: 50px;
-  height: 50px;
   display: flex;
+  display: -webkit-flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
   margin-left: 5px;
   margin-right: 5px;
   perspective: 1000px;
+  user-select: none;
 
   &.active {
     animation: activeChar 0.1s ease;
@@ -123,6 +128,7 @@ export default {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   display: flex;
+  display: -webkit-flex;
   justify-content: center;
   align-items: center;
   border: 2px solid #d3d6da;
@@ -143,8 +149,8 @@ export default {
 
 .guessedChar {
   text-align: center;
-  font-weight: bold;
-  font-size: 24px;
+  font-weight: 900;
+  font-size: 1.5rem;
   margin: 0px;
 }
 

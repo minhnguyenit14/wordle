@@ -26,6 +26,7 @@ export default {
   right: 0;
   background-color: rgba(0, 0, 0, 0.6);
   display: flex;
+  display: -webkit-flex;
   justify-content: center;
   align-items: center;
   opacity: 0;

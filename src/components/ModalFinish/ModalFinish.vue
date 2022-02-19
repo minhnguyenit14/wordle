@@ -83,11 +83,14 @@ h1 {
 .container {
   display: flex;
   flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
   align-items: center;
   padding: 40px 50px;
 }
 .row {
   display: flex;
+  display: -webkit-flex;
   align-items: center;
   justify-content: center;
 }
@@ -103,6 +106,7 @@ h1 {
 
 .charBoxContainer {
   display: flex;
+  display: -webkit-flex;
   align-items: center;
   justify-content: center;
   margin-top: -10px;
@@ -112,6 +116,7 @@ h1 {
 
 .charBox {
   display: flex;
+  display: -webkit-flex;
   align-items: center;
   justify-content: center;
   width: 50px;
@@ -156,6 +161,7 @@ p.message.nice {
   width: 30px;
   height: 30px;
   display: flex;
+  display: -webkit-flex;
   justify-content: center;
   align-items: center;
   font-size: 12px;
